@@ -8,23 +8,23 @@ pipeline {
 
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
-        BACKEND_IMAGE = "NotHarshhaa/wanderlust-backend"
-        FRONTEND_IMAGE = "NotHarshhaa/wanderlust-frontend"
+        BACKEND_IMAGE = "daer174/wanderlust-backend"
+        FRONTEND_IMAGE = "daer174/wanderlust-frontend"
     }
 
     stages {
         stage('SCM Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/NotHarshhaa/DevOps-Projects.git'
+                git branch: 'main', url: 'https://github.com/nggiabao/devops-project.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                dir('wanderlust-3tier-project/backend') {
+                dir('wanderlust-web-app/backend') {
                     sh "npm install || true"
                 }
-                dir('wanderlust-3tier-project/frontend') {
+                dir('wanderlust-web-app/frontend') {
                     sh "npm install"
                 }
             }
@@ -40,7 +40,7 @@ pipeline {
                         ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=blog-app \
                         -Dsonar.projectName=blog-app \
-                        -Dsonar.sources=wanderlust-3tier-project
+                        -Dsonar.sources=wanderlust-web-app
                     """
                 }
             }
@@ -54,8 +54,8 @@ pipeline {
                     
                     // Define targets for filesystem scanning
                     def fsTargets = [
-                        [path: "${WORKSPACE}/wanderlust-3tier-project/backend", name: "backend-fs"],
-                        [path: "${WORKSPACE}/wanderlust-3tier-project/frontend", name: "frontend-fs"]
+                        [path: "${WORKSPACE}/wanderlust-web-app/backend", name: "backend-fs"],
+                        [path: "${WORKSPACE}/wanderlust-web-app/frontend", name: "frontend-fs"]
                     ]
                     
                     // Run filesystem scans for source code vulnerabilities
@@ -124,7 +124,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                dir('wanderlust-3tier-project') {
+                dir('wanderlust-web-app') {
                     sh '''
                         docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} ./backend
                         docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} ./frontend
@@ -217,7 +217,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'docker-hub-token', variable: 'DOCKER_TOKEN')]) {
                     sh '''
-                        echo "${DOCKER_TOKEN}" | docker login -u NotHarshhaa --password-stdin
+                        echo "${DOCKER_TOKEN}" | docker login -u daer174 --password-stdin
                         docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
                         docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
                     '''
@@ -231,7 +231,7 @@ pipeline {
                     sh '''
                         echo "🚀 Deploying on host with docker compose..."
                         ssh -o StrictHostKeyChecking=no user@172.18.0.1 '
-                            cd /home/user/devops-projects/wanderlust-3tier-project &&
+                            cd /home/user/devops-projects/wanderlust-web-app &&
                             docker compose pull &&
                             docker compose up -d
                         '
