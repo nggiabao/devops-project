@@ -10,10 +10,10 @@ services:
 
   backend:
     container_name: backend
-    build: ./backend
+    image: daer174/wanderlust-backend:14 
     environment:
       - MONGODB_URI=mongodb://mongo/wanderlust
-      - CORS_ORIGIN=http://localhost:5173
+      - CORS_ORIGIN=192.168.1.129:5173 
     ports:
       - "5000:5000"
     depends_on:
@@ -21,12 +21,11 @@ services:
 
   frontend:
     container_name: frontend
-    build: ./frontend
+    image: daer174/wanderlust-frontend:14 
     environment:
-      - VITE_API_PATH=http://localhost:5000
+      - VITE_API_PATH=http://192.168.1.129:5000 
     ports:
       - "5173:5173"
       
 volumes:
   data:
-
