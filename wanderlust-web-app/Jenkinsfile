@@ -66,6 +66,8 @@ pipeline {
                 script {
                     def trivyDir = "${WORKSPACE}/trivy-reports"
 
+                    sh "mkdir -p ${trivyDir}"
+
                     def images = [
                         [name: "${BACKEND_IMAGE}:${IMAGE_TAG}", output: "trivy-backend.txt"],
                         [name: "${FRONTEND_IMAGE}:${IMAGE_TAG}", output: "trivy-frontend.txt"]
@@ -84,7 +86,7 @@ pipeline {
                                 --timeout 15m \
                                 --exit-code 0 \
                                 --format table \
-                                ${img.name} > ${trivyDir}//${img.output}
+                                ${img.name} > ${trivyDir}/${img.output}
                         """
                     }
                 }
