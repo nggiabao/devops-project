@@ -72,17 +72,18 @@ pipeline {
                     for (img in images) {
                         echo "🔍 Scanning ${img.name}..."
                         sh """
-                            mkdir -p wanderlust-3tier-project
+                            mkdir -p wanderlust-web-app
                             docker run --rm \
                                 -v /var/run/docker.sock:/var/run/docker.sock \
                                 -v \$HOME/.trivy-cache:/root/.cache/ \
-                                -v \$WORKSPACE/wanderlust-3tier-project:/scan-output \
+                                -v \$WORKSPACE/wanderlust-web-app:/scan-output \
                                 aquasec/trivy image \
                                 --scanners vuln \
                                 --severity HIGH,CRITICAL \
+                                --timeout 15m \
                                 --exit-code 0 \
                                 --format table \
-                                ${img.name} > wanderlust-3tier-project/${img.output}
+                                ${img.name} > wanderlust-web-app/${img.output}
                         """
                     }
                 }
