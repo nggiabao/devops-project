@@ -1,6 +1,10 @@
 pipeline {
     agent { label 'agent' }
 
+    triggers {
+        githubPush() 
+    }
+
     tools {
         jdk 'jdk21'
         nodejs 'node21'
